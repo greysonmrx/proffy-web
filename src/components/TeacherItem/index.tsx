@@ -2,33 +2,65 @@ import React from 'react';
 
 import whatsappIcon from '../../assets/images/icons/whatsapp.svg';
 
+import api from '../../services/api';
+
 import './styles.css';
 
-function TeacherItem() {
-  return (<article className="teacher-item">
-    <header>
-      <img src="https://avatars1.githubusercontent.com/u/43364141?s=460&u=433742cc704ded8dae06d82aaf3327cdebd05419&v=4" alt="Greyson Filho" />
-      <div>
-        <strong>Greyson Filho</strong>
-        <span>Programador</span>
-      </div>
-    </header>
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-    <br /><br />
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. In mattis ante in sapien interdum, condimentum egestas justo posuere. Nullam cursus dignissim massa eu convallis. Suspendisse venenatis varius fringilla.
-  </p>
-    <footer>
-      <p>
-        Preço/hora
-      <strong>R$ 80,00</strong>
-      </p>
-      <button type="button">
-        <img src={whatsappIcon} alt="WhatsApp" />
-      Entrar em contato
-    </button>
-    </footer>
-  </article>);
+export interface Teacher {
+  id: number;
+  name: string;
+  subject: string;
+  avatar: string;
+  bio: string;
+  cost: number;
+  whatsapp: string;
+}
+
+interface TeacherItemProps {
+  data: Teacher;
+}
+
+const TeacherItem: React.FC<TeacherItemProps> = ({ data }) => {
+  const {
+    id,
+    name,
+    subject,
+    avatar,
+    bio,
+    cost,
+    whatsapp
+  } = data;
+
+  async function handleCreateNewConnection() {
+    try {
+      await api.post('/connections', {
+        user_id: id
+      });
+      window.location.assign(`https://wa.me/${whatsapp}`);
+    } catch (err) {
+      alert('Erro ao criar uma nova conexão!');
+    }
+  }
+
+  return (
+    <article className="teacher-item">
+      <header>
+        <img src={avatar} alt={name} />
+        <div>
+          <strong>{name}</strong>
+          <span>{subject}</span>
+        </div>
+      </header>
+      <p>{bio}</p>
+      <footer>
+        <p>Preço/hora<strong>R$ {cost}</strong></p>
+        <button type="button" onClick={handleCreateNewConnection}>
+          <img src={whatsappIcon} alt="WhatsApp" />
+          Entrar em contato
+        </button>
+      </footer>
+    </article>
+  );
 }
 
 export default TeacherItem;
